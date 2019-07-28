@@ -1,13 +1,12 @@
 <template>
     <div class="home">
         <Draggable :tree="data" @change="change">
-            <Tree :data="data" data-d-route data-d-container></Tree>
+            <ECol :data="data" data-d-route data-d-container></ECol>
         </Draggable>
     </div>
 </template>
 
 <script>
-    import HelloWorld from '@/components/HelloWorld.vue'
     import Draggable from "../components/Draggable";
     import Tree from "../components/Tree";
 
@@ -15,47 +14,63 @@
         name: 'home',
         components: {
             Draggable,
-            HelloWorld,
-            Tree
+            Tree,
         },
         data() {
             return {
                 data: {
                     i: 'root',
+                    // col: 竖着排
+                    t: 'col',
                     c: [
                         {
                             i: '0',
+                            // row: 横着排
+                            t: 'row',
                             c: [
-                                {i: '0-0'},
-                                {i: '0-1'},
+                                {
+                                    i: '0-0', t: 'col',
+                                    c: [
+                                        {
+                                            i: '0-0-0',
+                                            t: 'row',
+                                        }
+                                    ]
+                                },
+                                {
+                                    i: '0-1', t: 'col',
+                                    c: [
+                                        {
+                                            i: '0-1-0',
+                                            t: 'row',
+                                        },
+                                        {
+                                            i: '0-1-1',
+                                            t: 'row',
+                                        }
+                                    ]
+                                },
                             ]
                         },
                         {
                             i: '1',
-                            container: false,
+                            t: 'row',
                             c: [
-                                {
-                                    i: '1-0',
-                                    c: [
-                                        {
-                                            i: '1-0-0'
-                                        },
-                                        {
-                                            i: '1-0-1'
-                                        },
-                                    ]
-                                },
-                                {i: '1-1'},
+                                {i: '1-0', t: 'col'},
+                                {i: '1-1', t: 'col'},
                             ]
                         },
                         {
                             i: '2',
+                            t: 'row',
                         },
                         {
                             i: '3',
+                            t: 'row',
                         },
                         {
                             i: '4',
+                            t: 'row',
                         },
                     ],
                 }

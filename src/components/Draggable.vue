@@ -17,13 +17,12 @@
                 startRoute: [],
                 lastRoute: [],
                 startStatus: {
+                    // { index: , el, container: false }
                     route: [],
-                    el: null, // 正在移动的元素
                 },
                 lastStatus: {
                     route: [],
                     position: '', //in: 元素里面, top: 元素上面, bottom: 元素上面
-                    el: null, // 激活的元素
                 },
                 ph: null,
             }
@@ -60,13 +59,13 @@
                 }
             },
             equalLastStatus(a, b) {
-                return a.route.join(",") === b.route.join(",") && a.position === b.position
+                return this.equalRoute(a.route, b.route) && a.position === b.position
             },
             startWithRoute(a, b) {
-                return a.join(",").startsWith(b.join(","))
+                return a.map(i => i.index).join(",").startsWith(b.map(i => i.index).join(","))
             },
             equalRoute(a, b) {
-                return a.join(",") === b.join(",")
+                return a.map(i => i.index).join(",") === b.map(i => i.index).join(",")
             },
             mouseDown(e) {
                 let target = e.target
@@ -86,8 +85,12 @@
 
                     if (find) {
                         // 只有标记了d-hand属性的元素才能拖动
-                        if (target.dataset['dIndex'] !== undefined) {
-                            route.unshift(parseInt(target.dataset['dIndex']))
+                        if (target.dataset['dRoute'] !== undefined) {
+                            route.unshift({
+                                index: parseInt(target.dataset['dRoute']),
+                                container: target.dataset['dContainer'] !== undefined,
+                                el: target,
+                            })
                         }
                     }
 
@@ -98,7 +101,13 @@
                     return
                 }
 
+                // 判断元素的父级是否是容器, 是容器才允许拖动
+                if (!route[route.length - 2].container) {
+                    return;
+                }
+
                 this.isMove = true
+
                 window.addEventListener('mousemove', this.mouseMove)
 
                 this.startStatus.route = route
@@ -106,66 +115,82 @@
             mouseMove(e) {
                 let target = e.target
                 let route = []
-                let routeEl = []
-                let isContainer = false
                 while (true) {
                     if (!target || target === document) {
                         break
                     }
 
-                    if (target.dataset['dIndex'] !== undefined) {
-                        if (route.length === 0) {
-                            if (target.dataset['dContainer'] !== undefined) {
-                                isContainer = true
-                            }
-                        }
+                    if (target.dataset['dRoute'] !== undefined) {
+                        route.unshift({
+                            index: parseInt(target.dataset['dRoute']),
+                            container: target.dataset['dContainer'] !== undefined,
+                            el: target,
+                        })
 
-                        route.unshift(parseInt(target.dataset['dIndex']))
-                        routeEl.unshift(target)
                     }
 
                     target = target.parentNode
                 }
 
-                let position = ''
-                let el = null
-                // 找到目标元素
-                // 如果是子级则只能放在自己的下面, 而不能是子
-                if (this.startWithRoute(route, this.startStatus.route)) {
-                    el = routeEl[this.startStatus.route.length - 1]
-                    route = route.slice(0, this.startStatus.route.length)
-                    position = 'bottom'
-                } else {
-                    el = routeEl[routeEl.length - 1]
-                }
-
-                if (!el) {
+                if (route.length === 0) {
                     return
                 }
 
+                let position = ''
+                // 找到目标元素
+                // 如果是子级则只能放在自己的下面, 而不能是子
+                // console.log(route.join(".") ," ", this.startStatus.route.join('.'), this.startWithRoute(route, this.startStatus.route))
+                if (this.startWithRoute(route, this.startStatus.route)) {
+                    route = route.slice(0, this.startStatus.route.length)
+                    position = 'bottom'
+                }
+
+                // 找到最近的父级是容器的元素
+                // 只有父元素是容器才允许放置
+                while (true) {
+                    if (route.length < 2) {
+                        return;
+                    }
+                    if (!route[route.length - 2].container) {
+                        route = route.slice(0, route.length - 1)
+                    } else {
+                        break
+                    }
+                }
+
+                // 元素
+                let el = route[route.length - 1].el
+
                 // 判断在上下
-                let rect = el.querySelector("[data-d-rect]")
-                let r = rect.getBoundingClientRect()
-                let m = r.y + r.height / 2
+                let rectEl = null
+                if (el.dataset['dRect'] !== null) {
+                    rectEl = el
+                } else {
+                    rectEl = el.querySelector("[data-d-rect]")
+                }
+
+                let rect = rectEl.getBoundingClientRect()
+                let m = rect.y + rect.height / 2
                 if (e.y > m) {
                     position = 'bottom'
                 } else {
                     position = 'top'
                 }
-
+                // console.log(el)
                 let lastStatus = {
                     route: route,
                     position,
                 }
 
-                if (!this.equalLastStatus(this.lastStatus, lastStatus)) {
-                    this.lastStatus = lastStatus
+                if (position) {
+                    if (!this.equalLastStatus(this.lastStatus, lastStatus)) {
+                        this.lastStatus = lastStatus
 
-                    this.removePH()
-                    this.addPH(el, lastStatus.position)
-                } else {
+                        this.removePH()
+                        this.addPH(el, lastStatus.position)
+                    } else {
+                    }
                 }
-
             },
             mouseUp(e) {
                 if (!this.isMove) {
@@ -176,25 +201,25 @@
                 let startRoute = this.startStatus.route
                 let endRoute = this.lastStatus.route
 
-                if (startRoute.join(",") !== endRoute.join(",")) {
+                if (endRoute.length && !this.equalRoute(startRoute, endRoute)) {
                     // 如果是在下方 则加1
                     if (this.lastStatus.position === "bottom") {
-                        endRoute[endRoute.length - 1] += 1
+                        endRoute[endRoute.length - 1].index += 1
                     }
 
                     // 如果有相同的父级, 当向下移动了from, 就会发生元素上移, 所以需要将to的index-1
                     if (endRoute.length >= startRoute.length) {
                         if (this.equalRoute(startRoute.slice(0, startRoute.length - 1), endRoute.slice(0, startRoute.length - 1))) {
-                            if (startRoute[startRoute.length - 1] < endRoute[startRoute.length - 1]) {
-                                endRoute[startRoute.length - 1] -= 1
+                            if (startRoute[startRoute.length - 1].index < endRoute[startRoute.length - 1].index) {
+                                endRoute[startRoute.length - 1].index -= 1
                             }
                         }
                     }
 
-                    if (startRoute.join(",") !== endRoute.join(",")) {
+                    if (!this.equalRoute(startRoute, endRoute)) {
                         this.$emit('change', {
-                            from: startRoute,
-                            to: endRoute,
+                            from: startRoute.slice(1),
+                            to: endRoute.slice(1),
                         })
                     }
                 }

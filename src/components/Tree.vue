@@ -1,17 +1,18 @@
 <template>
-    <div class="loop">
+    <div class="loop" data-d-rect>
         <!-- d-rect 判定上下的区域 -->
-        <div class="item" data-d-rect>
+        <div class="item">
             <!-- d-hand 手 -->
             <span class="hand" data-d-hand> + </span> {{data.i}}
         </div>
 
         <div class="child">
-            <!-- d-index -->
+            <!-- d-route -->
+            <!-- d-container, 只有父级开启了container才能拖动或者放入 -->
             <Tree v-for="(item, $index) in data.c"
                   :data="item" :key="$index"
-                  :data-d-index="$index"
-                  data-d-container></Tree>
+                  :data-d-route="$index"
+                  :data-d-container="item.container!==false"></Tree>
         </div>
     </div>
 </template>
@@ -35,6 +36,7 @@
 
     .loop {
         /*margin-left: 40px;*/
+        background: #fff;
     }
 
     .child {
@@ -45,4 +47,14 @@
         padding: 20px;
         border: 1px saddlebrown solid;
     }
+
+    [data-d-hand] {
+        /*background: #42b983;*/
+    }
+
+    .loop:not([data-d-container]) {
+        background: #d3938e;
+    }
+
+
 </style>
