@@ -31,6 +31,7 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
     .col {
+        position: relative;
         /*min-height: 50px;*/
         background: #ff7e68;
         padding: 20px 0;

@@ -3,11 +3,33 @@
     <div class="half">
       <Draggable :tree="data" @change="change">
         <ECol :data="data" data-d-node data-d-container></ECol>
+
+        <template slot="ph-tb">
+          <div class="ph-tb">
+            <div></div>
+          </div>
+        </template>
+        <template slot="ph-in">
+          <div class="ph-in">
+            <div></div>
+          </div>
+        </template>
       </Draggable>
     </div>
     <div class="half">
       <Draggable :tree="data2" @change="change2">
         <ECol :data="data2" data-d-node data-d-container></ECol>
+
+        <template slot="ph-tb">
+          <div class="ph-tb">
+            <div></div>
+          </div>
+        </template>
+        <template slot="ph-in">
+          <div class="ph-in">
+            <div></div>
+          </div>
+        </template>
       </Draggable>
     </div>
   </div>
