@@ -9,9 +9,9 @@
         <div class="child">
             <!-- d-route -->
             <div v-for="(item, $index) in data.c" class="row-item">
-                <ECol v-if="item.t==='col'" :data="item" :key="$index" :data-d-route="$index" data-d-container>
+                <ECol v-if="item.t==='col'" :data="item" :key="$index" :data-d-node="$index" data-d-container>
                 </ECol>
-                <ERow v-if="item.t==='row'" :data="item" :key="$index" :data-d-route="$index">
+                <ERow v-if="item.t==='row'" :data="item" :key="$index" :data-d-node="$index">
                 </ERow>
             </div>
         </div>
@@ -32,7 +32,7 @@
 <style scoped>
     .col {
         /*min-height: 50px;*/
-        background: #638bb1;
+        background: #ff7e68;
         padding: 20px 0;
     }
 
