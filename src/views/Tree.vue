@@ -3,16 +3,16 @@
     <Draggable :tree="data" @change="change">
       <Tree :data="data" data-d-node data-d-container></Tree>
 
-      <template slot="ph-tb">
-        <div class="ph-tb">
-          <div></div>
-        </div>
-      </template>
-      <template slot="ph-in">
-        <div class="ph-in">
-          <div></div>
-        </div>
-      </template>
+      <!--<template slot="ph-tb">-->
+        <!--<div class="ph-tb">-->
+          <!--<div></div>-->
+        <!--</div>-->
+      <!--</template>-->
+      <!--<template slot="ph-in">-->
+        <!--<div class="ph-in">-->
+          <!--<div></div>-->
+        <!--</div>-->
+      <!--</template>-->
 
     </Draggable>
   </div>

@@ -32,7 +32,7 @@
 <style lang="scss" scoped>
   .row {
     /*min-height: 50px;*/
-    background: #fff;
+    background: rgba(255, 255, 255, 0.4);
     padding: 20px 0px;
     border: 1px #ff731c solid;
   }

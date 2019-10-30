@@ -4,12 +4,12 @@
 
     <div style="display: none">
       <slot name="ph-tb">
-        <div class="ph">
+        <div class="ph" ref="defaultPh">
           <div></div>
         </div>
       </slot>
       <slot name="ph-in">
-        <div class="ph-in">
+        <div class="ph-in" ref="defaultPhIn">
           <div></div>
         </div>
       </slot>
@@ -42,19 +42,32 @@
     },
     methods: {
       addPH(el, position) {
-
         let ph = null
         switch (position) {
           case 'bottom':
-            ph = this.$slots['ph-tb'][0].elm
+            if (this.$slots['ph-tb']) {
+              ph = this.$slots['ph-tb'][0].elm
+            } else {
+              ph = this.$refs.defaultPh
+            }
             this.insertAfter(ph, el)
             break
           case 'top':
-            ph = this.$slots['ph-tb'][0].elm
+            if (this.$slots['ph-tb']) {
+              ph = this.$slots['ph-tb'][0].elm
+            } else {
+              ph = this.$refs.defaultPh
+            }
+
+            console.log('top', this.$slots, this.$refs)
             el.parentNode.insertBefore(ph, el)
             break
           case 'in':
-            ph = this.$slots['ph-in'][0].elm
+            if (this.$slots['ph-in']) {
+              ph = this.$slots['ph-in'][0].elm
+            } else {
+              ph = this.$refs.defaultPhIn
+            }
             el.append(ph)
             break
         }
@@ -85,6 +98,20 @@
         return a.map(i => i.index).join(",") === b.map(i => i.index).join(",")
       },
       mouseDown(e) {
+        // 找到第一个draggable, 如果是自己才能响应.
+        let firstDraggable = null
+        for (let i in e.path) {
+          let item = e.path[i]
+          if (item._isDraggable) {
+            firstDraggable = item
+            break
+          }
+        }
+
+        if (firstDraggable !== this.$el) {
+          return
+        }
+
         let target = e.target
 
         let find = false
@@ -138,16 +165,31 @@
         this.isMove = true
 
         this.$el.addEventListener('mousemove', this.mouseMove)
-        this.$el.addEventListener('mouseup', this.mouseUp)
+        document.addEventListener('mouseup', this.mouseUp)
 
         this.startStatus.route = route
       },
       mouseMove(e) {
+        // 找到第一个draggable, 如果是自己才能响应.
+        let firstDraggable = null
+        for (let i in e.path) {
+          let item = e.path[i]
+          if (item._isDraggable) {
+            firstDraggable = item
+            break
+          }
+        }
+
+        if (firstDraggable !== this.$el) {
+          return
+        }
+
         let target = e.target
         let route = []
         let container = false
+        let endParent = this.$el
         while (true) {
-          if (!target || target === document) {
+          if (!target || target === endParent) {
             break
           }
 
@@ -310,7 +352,7 @@
 
         this.isMove = false
         this.$el.removeEventListener('mousemove', this.mouseMove)
-        this.$el.removeEventListener('mouseup', this.mouseUp)
+        document.removeEventListener('mouseup', this.mouseUp)
         this.lastStatus = {
           route: []
         }
@@ -319,6 +361,7 @@
     },
     mounted() {
       this.$el.addEventListener('mousedown', this.mouseDown)
+      this.$el._isDraggable = true
     }
   }
 </script>

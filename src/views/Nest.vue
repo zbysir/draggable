@@ -1,36 +1,23 @@
 <template>
   <div class="home">
-    <div class="half">
+    <div>
       <Draggable :tree="data" @change="change" scope="d1">
         <ECol :data="data" data-d-node data-d-container></ECol>
 
-        <!--<template slot="ph-tb">-->
-          <!--<div class="ph-tb">-->
-            <!--<div></div>-->
-          <!--</div>-->
-        <!--</template>-->
-        <!--<template slot="ph-in">-->
-          <!--<div class="ph-in">-->
-            <!--<div></div>-->
-          <!--</div>-->
-        <!--</template>-->
+        <Draggable :tree="data2" @change="change2" scope="d1" style="background-color: slategrey">
+          <ECol :data="data2" data-d-node data-d-container></ECol>
 
-      </Draggable>
-    </div>
-    <div class="half">
-      <Draggable :tree="data2" @change="change2" scope="d1">
-        <ECol :data="data2" data-d-node data-d-container></ECol>
-
-        <template slot="ph-tb">
-          <div class="ph-tb">
-            <div></div>
-          </div>
-        </template>
-        <template slot="ph-in">
-          <div class="ph-in">
-            <div></div>
-          </div>
-        </template>
+          <template slot="ph-tb">
+            <div class="ph-tb">
+              <div></div>
+            </div>
+          </template>
+          <template slot="ph-in">
+            <div class="ph-in">
+              <div></div>
+            </div>
+          </template>
+        </Draggable>
       </Draggable>
     </div>
   </div>
@@ -90,18 +77,6 @@
                 {i: '1-1', t: 'col'},
               ]
             },
-            {
-              i: '2',
-              t: 'row',
-            },
-            {
-              i: '3',
-              t: 'row',
-            },
-            {
-              i: '4',
-              t: 'row',
-            },
           ],
         },
         data2: {
@@ -137,28 +112,6 @@
                   ]
                 },
               ]
-            },
-            {
-              i: '1',
-              t: 'row',
-              c: [
-                {
-                  i: '1-0', t: 'col',
-                },
-                {i: '1-1', t: 'col'},
-              ]
-            },
-            {
-              i: '2',
-              t: 'row',
-            },
-            {
-              i: '3',
-              t: 'row',
-            },
-            {
-              i: '4',
-              t: 'row',
             },
           ],
         }
@@ -238,8 +191,5 @@
   }
 </script>
 <style scoped>
-  .half {
-    width: 49%;
-    display: inline-block;
-  }
+
 </style>

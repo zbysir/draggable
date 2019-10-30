@@ -33,7 +33,7 @@
     .col {
         position: relative;
         /*min-height: 50px;*/
-        background: #ff7e68;
+        background: rgba(255, 119, 101, 0.34);
         padding: 20px 0;
     }
 
